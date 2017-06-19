@@ -29,6 +29,7 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         scene = GameScene(size: skView.bounds.size)
         scene.scaleMode = .aspectFill
         scene.tick = didTick
+        scene.elevate = doElevation
         
         swiftris = Swiftris()
         swiftris.delegate = self
@@ -88,11 +89,32 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         swiftris.letShapeFall()
     }
     
+    func doElevation() {
+        if swiftris.elevateBlocks() == true {
+            scene.elevateLines(blockArray: swiftris.blockArray)
+            
+            let shape = swiftris.newFullLine()
+            scene.addNewLineBottom(shape) {
+                
+                var conectedBlocks = [[Block]?]()
+                
+                for column in (0..<NumColumns).reversed() {
+                    if let _ = self.swiftris.blockArray[column, NumRows - 1] {
+                        self.swiftris.setConectedBlocksFrom(block: self.swiftris.blockArray[column, NumRows - 1]!)
+                        conectedBlocks.append(self.swiftris.getConectedBlocks())
+                        self.swiftris.dismarkAllBlocks()
+                    }
+                }
+            }
+        }
+    }
+    
     func nextShape() {
         let newShapes = swiftris.newShape()
         guard let fallingShape = newShapes.fallingShape else {
             return
         }
+        
         self.scene.addPreviewShapeToScene(newShapes.nextShape!) {}
         self.scene.movePreviewShape(fallingShape) {
             self.view.isUserInteractionEnabled = true
@@ -104,20 +126,24 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         levelLabel.text = "\(swiftris.level)"
         scoreLabel.text = "\(swiftris.score)"
         scene.tickLengthMillis = TickLengthLevelOne
+        scene.elevationLengthMillis = ElevationLengthLevelOne
         
-        // The following is false when restarting a new game
-        if swiftris.nextShape != nil && swiftris.nextShape!.blocks[0].sprite == nil {
-            scene.addPreviewShapeToScene(swiftris.nextShape!) {
-                self.nextShape()
-            }
-        } else {
-            nextShape()
-        }
+//        // The following is false when restarting a new game
+//        if swiftris.nextShape != nil && swiftris.nextShape!.blocks[0].sprite == nil {
+//            scene.addPreviewShapeToScene(swiftris.nextShape!) {
+//                self.nextShape()
+//            }
+//        } else {
+//            nextShape()
+//        }
+        
+        scene.startElevating()
     }
     
     func gameDidEnd(_ swiftris: Swiftris) {
         view.isUserInteractionEnabled = false
         scene.stopTicking()
+        scene.stopElevating()
         scene.playSound("gameover.mp3")
         scene.animateCollapsingLines(swiftris.removeAllBlocks(), fallenBlocks: swiftris.removeAllBlocks()) {
             swiftris.beginGame()
@@ -131,11 +157,18 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         } else if scene.tickLengthMillis > 50 {
             scene.tickLengthMillis -= 50
         }
+        
+        if scene.elevationLengthMillis >= 700 {
+            scene.tickLengthMillis -= 100
+        } else if scene.tickLengthMillis > 300 {
+            scene.tickLengthMillis -= 50
+        }
         scene.playSound("levelup.mp3")
     }
     
     func gameShapeDidDrop(_ swiftris: Swiftris) {
         scene.stopTicking()
+        scene.stopElevating()
         scene.redrawShape(swiftris.fallingShape!) {
             swiftris.letShapeFall()
         }
@@ -144,6 +177,7 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
     
     func gameShapeDidLand(_ swiftris: Swiftris) {
         scene.stopTicking()
+        scene.stopElevating()
         self.view.isUserInteractionEnabled = false
         let removedLines = swiftris.removeCompletedLines()
         if removedLines.linesRemoved.count > 0 {

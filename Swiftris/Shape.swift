@@ -81,6 +81,13 @@ class Shape: Hashable, CustomStringConvertible {
         return "\(color) block facing \(orientation): \(blocks[FirstBlockIdx]), \(blocks[SecondBlockIdx]), \(blocks[ThirdBlockIdx]), \(blocks[FourthBlockIdx])"
     }
     
+    init() {
+        self.color = .red
+        self.column = 0
+        self.row = 1
+        self.orientation = .ninety
+    }
+    
     init(column:Int, row:Int, color: BlockColor, orientation:Orientation) {
         self.color = color
         self.column = column

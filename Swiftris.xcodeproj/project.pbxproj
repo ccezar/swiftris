@@ -36,6 +36,7 @@
 		F65F84F019782EB80050EF35 /* whitebg.png in Resources */ = {isa = PBXBuildFile; fileRef = F65F84EA19782EB80050EF35 /* whitebg.png */; };
 		F65F84F119782EB80050EF35 /* whitebg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F65F84EB19782EB80050EF35 /* whitebg@2x.png */; };
 		F663845119798F6F008B2C71 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = F663845019798F6F008B2C71 /* Block.swift */; };
+		FCF9369B1EF57FEF00B6E132 /* FullLineShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF9369A1EF57FEF00B6E132 /* FullLineShape.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		F65F84EA19782EB80050EF35 /* whitebg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whitebg.png; sourceTree = "<group>"; };
 		F65F84EB19782EB80050EF35 /* whitebg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "whitebg@2x.png"; sourceTree = "<group>"; };
 		F663845019798F6F008B2C71 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
+		FCF9369A1EF57FEF00B6E132 /* FullLineShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullLineShape.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				F61F20E6197C8ECB00A9986C /* Shape.swift */,
 				F61F20E8197C992F00A9986C /* SquareShape.swift */,
 				F61F20EA197C9EB300A9986C /* LineShape.swift */,
+				FCF9369A1EF57FEF00B6E132 /* FullLineShape.swift */,
 				F61F20ED197C9EB300A9986C /* TShape.swift */,
 				F6037D16197DBFC6005331B5 /* JShape.swift */,
 				F6037D17197DBFC6005331B5 /* LShape.swift */,
@@ -312,6 +315,7 @@
 				F6037D1F197DC5DE005331B5 /* Swiftris.swift in Sources */,
 				F61F20F3197C9EB300A9986C /* TShape.swift in Sources */,
 				F61F20F0197C9EB300A9986C /* LineShape.swift in Sources */,
+				FCF9369B1EF57FEF00B6E132 /* FullLineShape.swift in Sources */,
 				F6037D1B197DBFC6005331B5 /* LShape.swift in Sources */,
 				F6037D1C197DBFC6005331B5 /* SShape.swift in Sources */,
 				F646C31A19784EB000D209B5 /* Array2D.swift in Sources */,

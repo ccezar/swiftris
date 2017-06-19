@@ -47,20 +47,21 @@ class Block: Hashable, CustomStringConvertible {
     // Variables
     var column: Int
     var row: Int
+    var marked = false
     
     // Lazy loading
     var sprite: SKSpriteNode?
     
     var spriteName: String {
-    return color.description
+        return color.description
     }
     
     var hashValue: Int {
-    return self.column ^ self.row
+        return self.column ^ self.row
     }
     
     var description: String {
-    return "\(color) (\(column), \(row))"
+        return "\(color) (\(column), \(row)) - marked: \(marked)"
     }
     
     init(column:Int, row:Int, color:BlockColor) {

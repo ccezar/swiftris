@@ -54,6 +54,16 @@ class Swiftris {
         return (fallingShape, nextShape)
     }
     
+    func newFullLine() -> Shape {
+        let shape = FullLineShape(column: 0, row: NumRows - 1)
+        
+        for block in shape.blocks {
+            blockArray[block.column, block.row] = block
+        }
+
+        return shape
+    }
+    
     func detectIllegalPlacement() -> Bool {
         guard let shape = fallingShape else {
             return false
@@ -66,6 +76,16 @@ class Swiftris {
                 return true
             }
         }
+        return false
+    }
+    
+    func detectIllegalElevation() -> Bool {
+        for column in 0..<NumColumns {
+            if blockArray[column, 0] != nil {
+                return true
+            }
+        }
+        
         return false
     }
     
@@ -85,12 +105,13 @@ class Swiftris {
         guard let shape = fallingShape else {
             return false
         }
+        
         for bottomBlock in shape.bottomBlocks {
-            if bottomBlock.row == NumRows - 1
-                || blockArray[bottomBlock.column, bottomBlock.row + 1] != nil {
-                    return true
+            if bottomBlock.row == NumRows - 1 || blockArray[bottomBlock.column, bottomBlock.row + 1] != nil {
+                return true
             }
         }
+        
         return false
     }
     
@@ -98,6 +119,36 @@ class Swiftris {
         score = 0
         level = 1
         delegate?.gameDidEnd(self)
+    }
+    
+    func elevateBlocks() -> Bool {
+        for row in 1..<blockArray.rows {
+            for column in 0..<blockArray.columns {
+                if let block = blockArray[column, row] {
+                    blockArray[column, row - 1] = block
+                } else {
+                    blockArray[column, row - 1] = nil
+                }
+            }
+        }
+        
+        guard detectIllegalElevation() == false else {
+            endGame()
+            
+            return false
+        }
+        
+        return true
+    }
+    
+    func dismarkAllBlocks() {
+        for row in 1..<blockArray.rows {
+            for column in 0..<blockArray.columns {
+                if let block = blockArray[column, row] {
+                    block.marked = false
+                }
+            }
+        }
     }
     
     func removeAllBlocks() -> Array<Array<Block>> {
@@ -197,6 +248,48 @@ class Swiftris {
             }
         }
     }
+        
+    func setConectedBlocksFrom(block: Block) {
+        if block.marked {
+            return
+        }
+            
+        block.marked = true
+        var neighbors = [Block?]()
+        
+        // row + 1
+        if block.row < NumRows - 1 { neighbors.append(blockArray[block.column, block.row + 1]) }
+        
+        // row - 1
+        if block.row > 0 { neighbors.append(blockArray[block.column, block.row - 1]) }
+        
+        // column + 1
+        if block.column < NumColumns - 1 { neighbors.append(blockArray[block.column + 1, block.row]) }
+        
+        // column - 1
+        if block.column > 0 { neighbors.append(blockArray[block.column - 1, block.row]) }
+        
+        for neighbor in neighbors {
+            if block.color == neighbor?.color {
+                setConectedBlocksFrom(block: neighbor!)
+            }
+        }
+    }
+    
+    func getConectedBlocks() -> [Block]? {
+        var blocks = [Block]()
+        
+        for row in 0..<blockArray.rows {
+            for column in 0..<blockArray.columns {
+                if let block = blockArray[column, row], block.marked == true {
+                    blocks.append(block)
+                }
+            }
+        }
+        
+        return blocks.count > 1 ? blocks : nil
+    }
+
     
     func rotateShape() {
         guard let shape = fallingShape else {
