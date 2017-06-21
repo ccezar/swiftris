@@ -20,10 +20,10 @@ protocol SwiftrisDelegate {
 }
 
 class Swiftris {
-    var blockArray:Array2D<Block>
-    var nextShape:Shape?
-    var fallingShape:Shape?
-    var delegate:SwiftrisDelegate?
+    var blockArray: Array2D<Block>
+    var nextShape: Shape?
+    var fallingShape: Shape?
+    var delegate: SwiftrisDelegate?
     
     var score = 0
     var level = 1
@@ -125,6 +125,7 @@ class Swiftris {
         for row in 1..<blockArray.rows {
             for column in 0..<blockArray.columns {
                 if let block = blockArray[column, row] {
+                    block.row -= 1
                     blockArray[column, row - 1] = block
                 } else {
                     blockArray[column, row - 1] = nil
@@ -149,6 +150,37 @@ class Swiftris {
                 }
             }
         }
+    }
+    
+    func removeSpecificBlocks(listOfBlocks: [[Block]]) -> [[Block]] {
+        for blocks in listOfBlocks {
+            for block in blocks {
+                blockArray[block.column, block.row] = nil
+            }
+        }
+        
+        var fallenBlocks = Array<Array<Block>>()
+        for column in 0..<NumColumns {
+            var fallenBlocksArray = Array<Block>()
+            for row in (1..<NumRows-1).reversed() {
+                guard let block = blockArray[column, row] else {
+                    continue
+                }
+                var newRow = row
+                while (newRow < NumRows - 1 && blockArray[column, newRow + 1] == nil) {
+                    newRow += 1
+                }
+                block.row = newRow
+                blockArray[column, row] = nil
+                blockArray[column, newRow] = block
+                fallenBlocksArray.append(block)
+            }
+            if fallenBlocksArray.count > 0 {
+                fallenBlocks.append(fallenBlocksArray)
+            }
+        }
+        
+        return fallenBlocks
     }
     
     func removeAllBlocks() -> Array<Array<Block>> {
@@ -253,7 +285,7 @@ class Swiftris {
         if block.marked {
             return
         }
-            
+        
         block.marked = true
         var neighbors = [Block?]()
         
@@ -287,7 +319,7 @@ class Swiftris {
             }
         }
         
-        return blocks.count > 1 ? blocks : nil
+        return blocks.count > 2 ? blocks : nil
     }
 
     

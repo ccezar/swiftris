@@ -96,17 +96,45 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
             let shape = swiftris.newFullLine()
             scene.addNewLineBottom(shape) {
                 
-                var conectedBlocks = [[Block]?]()
+                var conectedBlocks = self.removeConectedBlocks()
                 
-                for column in (0..<NumColumns).reversed() {
-                    if let _ = self.swiftris.blockArray[column, NumRows - 1] {
-                        self.swiftris.setConectedBlocksFrom(block: self.swiftris.blockArray[column, NumRows - 1]!)
-                        conectedBlocks.append(self.swiftris.getConectedBlocks())
-                        self.swiftris.dismarkAllBlocks()
+                while conectedBlocks.count > 0 {
+                    let fallenBlocks = self.swiftris.removeSpecificBlocks(listOfBlocks: conectedBlocks)
+                    self.scene.animateCollapsingLines(conectedBlocks, fallenBlocks: fallenBlocks) { }
+                    conectedBlocks = self.removeConectedBlocks()
+                }                
+            }
+        }
+    }
+    
+    func removeConectedBlocks() -> [[Block]] {
+        var conectedBlocks = [[Block]]()
+        
+        for row in (0..<NumRows).reversed() {
+            for column in (0..<NumColumns).reversed() {
+                if let _ = self.swiftris.blockArray[column, row] {
+                    self.swiftris.setConectedBlocksFrom(block: self.swiftris.blockArray[column, row]!)
+                    
+                    if let blocks = self.swiftris.getConectedBlocks() {
+                        
+                        var existingBlocks = false
+                        for item in conectedBlocks {
+                            if item.elementsEqual(blocks) {
+                                existingBlocks = true
+                            }
+                        }
+                        
+                        if existingBlocks == false {
+                            conectedBlocks.append(blocks)
+                        }
                     }
+                    
+                    self.swiftris.dismarkAllBlocks()
                 }
             }
         }
+        
+        return conectedBlocks
     }
     
     func nextShape() {
